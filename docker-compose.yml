@@ -8,15 +8,31 @@ services:
     platform: linux/x86_64
     environment:
       MYSQL_DATABASE: testdb
-      # MYSQL_USER: user
-      # MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
       TZ: Asia/Tokyo
     volumes:
       # データの永続化
       - ./data/mysql:/var/lib/mysql
       # 初期化スクリプトのマウント
-      - ./conf/initdb.d:/docker-entrypoint-initdb.d
+      - ./conf/mysql/initdb.d:/docker-entrypoint-initdb.d
       # 設定ファイルのマウント
-      - ./conf/conf.d/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./conf/mysql/conf.d/my.cnf:/etc/mysql/conf.d/my.cnf
     # restart: always
+
+  # Postgres
+  postgres:
+    container_name: postgres
+    image: postgres:10.21-alpine3.16
+    platform: linux/x86_64
+    environment:
+      POSTGRES_DB: testdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      TZ: Asia/Tokyo
+    volumes:
+      # データの永続化
+      - ./data/postgres:/var/lib/postgresql/data
+      # 初期化スクリプトのマウント
+      - ./conf/postgres/initdb.d:/docker-entrypoint-initdb.d
