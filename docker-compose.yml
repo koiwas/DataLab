@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  # MySQL
+  mysql:
+    container_name: mysql
+    image: mysql:5.7
+    platform: linux/x86_64
+    environment:
+      MYSQL_DATABASE: testdb
+      # MYSQL_USER: user
+      # MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root
+      TZ: Asia/Tokyo
+    volumes:
+      # データの永続化
+      - ./data/mysql:/var/lib/mysql
+      # 初期化スクリプトのマウント
+      - ./conf/initdb.d:/docker-entrypoint-initdb.d
+      # 設定ファイルのマウント
+      - ./conf/conf.d/my.cnf:/etc/mysql/conf.d/my.cnf
+    # restart: always
