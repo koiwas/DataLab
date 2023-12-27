@@ -21,23 +21,7 @@ services:
       - ./conf/mysql/conf.d/my.cnf:/etc/mysql/conf.d/my.cnf
     # restart: always
 
-  # Postgres
-  postgres:
-    container_name: postgres
-    image: postgres:10.21-alpine3.16
-    platform: linux/x86_64
-    environment:
-      POSTGRES_DB: testdb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      # TZ: Asia/Tokyo
-    volumes:
-      # データの永続化
-      - ./data/postgres:/var/lib/postgresql/data
-      # 初期化スクリプトのマウント
-      - ./conf/postgres/initdb.d:/docker-entrypoint-initdb.d
-
-    # Postgres for digdag
+  # Postgres for digdag
   postgres_digdag:
     container_name: postgres_digdag
     image: postgres:10.21-alpine3.16
@@ -53,6 +37,25 @@ services:
     volumes:
       # データの永続化
       - ./data/postgres_digdag:/var/lib/postgresql/data
+
+  # Postgres for metabase
+  postgres_metabase:
+    container_name: postgres_metabase
+    image: postgres:10.21-alpine3.16
+    platform: linux/x86_64
+    environment:
+      POSTGRES_DB: testdb
+      POSTGRES_USER: metabase
+      POSTGRES_PASSWORD: password
+      # TZ: Asia/Tokyo
+    ports:
+      - 5436:5436
+    command: -p 5436
+    volumes:
+      # データの永続化
+      - ./data/postgres:/var/lib/postgresql/data
+      # 初期化スクリプトのマウント
+      - ./conf/postgres/initdb.d:/docker-entrypoint-initdb.d
 
   # digdag
   digdag:
@@ -71,3 +74,24 @@ services:
       - ./conf/digdag/server.properties:/etc/digdag/server.properties
     depends_on:
       - postgres_digdag
+
+  # metabase
+  metabase:
+    container_name: metabase
+    image: metabase/metabase:v0.42.3
+    platform: linux/x86_64
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: testdb
+      MB_DB_PORT: 5436
+      MB_DB_USER: metabase
+      MB_DB_PASS: password
+      MB_DB_HOST: postgres_metabase
+      # JAVA_TIMEZONE=Asia/Tokyo
+    ports:
+      - 3000:3000
+    volumes:
+      # データの永続化
+      - ./data/metabase:/metabase-data
+    depends_on:
+      - postgres_metabase
