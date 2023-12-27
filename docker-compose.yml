@@ -11,7 +11,7 @@ services:
       MYSQL_USER: mysql
       MYSQL_PASSWORD: password
       MYSQL_ROOT_PASSWORD: password
-      TZ: Asia/Tokyo
+      # TZ: Asia/Tokyo
     volumes:
       # データの永続化
       - ./data/mysql:/var/lib/mysql
@@ -30,9 +30,44 @@ services:
       POSTGRES_DB: testdb
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      TZ: Asia/Tokyo
+      # TZ: Asia/Tokyo
     volumes:
       # データの永続化
       - ./data/postgres:/var/lib/postgresql/data
       # 初期化スクリプトのマウント
       - ./conf/postgres/initdb.d:/docker-entrypoint-initdb.d
+
+    # Postgres for digdag
+  postgres_digdag:
+    container_name: postgres_digdag
+    image: postgres:10.21-alpine3.16
+    platform: linux/x86_64
+    environment:
+      POSTGRES_DB: digdag
+      POSTGRES_USER: digdag
+      POSTGRES_PASSWORD: password
+      # TZ: Asia/Tokyo
+    ports:
+      - 5435:5435
+    command: -p 5435
+    volumes:
+      # データの永続化
+      - ./data/postgres_digdag:/var/lib/postgresql/data
+
+  # digdag
+  digdag:
+    container_name: digdag
+    build:
+      context: .
+      dockerfile: ./conf/digdag/Dockerfile
+    platform: linux/x86_64
+    ports:
+      - 65432:65432
+    volumes:
+      # tmpとworkspaceのマウント
+      - ./data/digdag/tmp:/tmp
+      - ./data/digdag/workspace:/workspace
+      # 設定ファイルのマウント
+      - ./conf/digdag/server.properties:/etc/digdag/server.properties
+    depends_on:
+      - postgres_digdag
