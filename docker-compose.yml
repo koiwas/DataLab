@@ -1,56 +1,39 @@
 version: '3'
 
 services:
-  # MySQL
-  mysql:
-    container_name: mysql
-    image: mysql:5.7
-    platform: linux/x86_64
-    environment:
-      MYSQL_DATABASE: testdb
-      MYSQL_USER: mysql
-      MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: password
-      # TZ: Asia/Tokyo
-    volumes:
-      # データの永続化
-      - ./data/mysql:/var/lib/mysql
-      # 初期化スクリプトのマウント
-      - ./conf/mysql/initdb.d:/docker-entrypoint-initdb.d
-      # 設定ファイルのマウント
-      - ./conf/mysql/conf.d/my.cnf:/etc/mysql/conf.d/my.cnf
-    # restart: always
+  # # MySQL
+  # mysql:
+  #   container_name: mysql
+  #   image: mysql:5.7
+  #   platform: linux/x86_64
+  #   environment:
+  #     MYSQL_DATABASE: testdb
+  #     MYSQL_USER: mysql
+  #     MYSQL_PASSWORD: password
+  #     MYSQL_ROOT_PASSWORD: password
+  #     # TZ: Asia/Tokyo
+  #   volumes:
+  #     # データの永続化
+  #     - ./data/mysql:/var/lib/mysql
+  #     # 初期化スクリプトのマウント
+  #     - ./conf/mysql/initdb.d:/docker-entrypoint-initdb.d
+  #     # 設定ファイルのマウント
+  #     - ./conf/mysql/conf.d/my.cnf:/etc/mysql/conf.d/my.cnf
+  #   # restart: always
 
-  # Postgres for digdag
-  postgres_digdag:
-    container_name: postgres_digdag
+  # Postgres
+  postgres:
+    container_name: postgres
     image: postgres:10.21-alpine3.16
-    platform: linux/x86_64
+    # platform: linux/x86_64
     environment:
-      POSTGRES_DB: digdag
-      POSTGRES_USER: digdag
+      # superuserの設定
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       # TZ: Asia/Tokyo
     ports:
-      - 5435:5435
-    command: -p 5435
-    volumes:
-      # データの永続化
-      - ./data/postgres_digdag:/var/lib/postgresql/data
-
-  # Postgres for metabase
-  postgres_metabase:
-    container_name: postgres_metabase
-    image: postgres:10.21-alpine3.16
-    platform: linux/x86_64
-    environment:
-      POSTGRES_DB: testdb
-      POSTGRES_USER: metabase
-      POSTGRES_PASSWORD: password
-      # TZ: Asia/Tokyo
-    ports:
-      - 5436:5436
-    command: -p 5436
+      - 5432:5432
     volumes:
       # データの永続化
       - ./data/postgres:/var/lib/postgresql/data
@@ -63,7 +46,7 @@ services:
     build:
       context: .
       dockerfile: ./conf/digdag/Dockerfile
-    platform: linux/x86_64
+    # platform: linux/x86_64
     ports:
       - 65432:65432
     volumes:
@@ -73,20 +56,20 @@ services:
       # 設定ファイルのマウント
       - ./conf/digdag/server.properties:/etc/digdag/server.properties
     depends_on:
-      - postgres_digdag
+      - postgres
 
   # metabase
   metabase:
     container_name: metabase
     image: metabase/metabase:v0.42.3
-    platform: linux/x86_64
+    # platform: linux/x86_64
     environment:
       MB_DB_TYPE: postgres
-      MB_DB_DBNAME: testdb
-      MB_DB_PORT: 5436
+      MB_DB_HOST: postgres
+      MB_DB_PORT: 5432
+      MB_DB_DBNAME: metabase
       MB_DB_USER: metabase
       MB_DB_PASS: password
-      MB_DB_HOST: postgres_metabase
       # JAVA_TIMEZONE=Asia/Tokyo
     ports:
       - 3000:3000
@@ -94,4 +77,4 @@ services:
       # データの永続化
       - ./data/metabase:/metabase-data
     depends_on:
-      - postgres_metabase
+      - postgres
