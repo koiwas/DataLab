@@ -39,6 +39,12 @@ services:
       - ./data/postgres:/var/lib/postgresql/data
       # 初期化スクリプトのマウント
       - ./conf/postgres/initdb.d:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   # digdag
   digdag:
@@ -56,7 +62,9 @@ services:
       # 設定ファイルのマウント
       - ./conf/digdag/server.properties:/etc/digdag/server.properties
     depends_on:
-      - postgres
+      # postgresのhealthcheckが成功したら起動
+      postgres:
+        condition: service_healthy
 
   # metabase
   metabase:
@@ -77,4 +85,6 @@ services:
       # データの永続化
       - ./data/metabase:/metabase-data
     depends_on:
-      - postgres
+      # postgresのhealthcheckが成功したら起動
+      postgres:
+        condition: service_healthy
