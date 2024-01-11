@@ -21,70 +21,84 @@ services:
   #     - ./conf/mysql/conf.d/my.cnf:/etc/mysql/conf.d/my.cnf
   #   # restart: always
 
-  # Postgres
-  postgres:
-    container_name: postgres
-    image: postgres:10.21-alpine3.16
-    # platform: linux/x86_64
-    environment:
-      # superuserの設定
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      # TZ: Asia/Tokyo
-    ports:
-      - 5432:5432
-    volumes:
-      # データの永続化
-      - ./data/postgres:/var/lib/postgresql/data
-      # 初期化スクリプトのマウント
-      - ./conf/postgres/initdb.d:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+  # # Postgres
+  # postgres:
+  #   container_name: postgres
+  #   image: postgres:10.21-alpine3.16
+  #   # platform: linux/x86_64
+  #   environment:
+  #     # superuserの設定
+  #     POSTGRES_DB: postgres
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: password
+  #     # TZ: Asia/Tokyo
+  #   ports:
+  #     - 5432:5432
+  #   volumes:
+  #     # データの永続化
+  #     - ./data/postgres:/var/lib/postgresql/data
+  #     # 初期化スクリプトのマウント
+  #     - ./conf/postgres/initdb.d:/docker-entrypoint-initdb.d
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 30s
 
-  # digdag
-  digdag:
-    container_name: digdag
+  # # digdag
+  # digdag:
+  #   container_name: digdag
+  #   build:
+  #     context: .
+  #     dockerfile: ./conf/digdag/Dockerfile
+  #   # platform: linux/x86_64
+  #   ports:
+  #     - 65432:65432
+  #   volumes:
+  #     # tmpとworkspaceのマウント
+  #     - ./data/digdag/tmp:/tmp
+  #     - ./data/digdag/workspace:/workspace
+  #     # 設定ファイルのマウント
+  #     - ./conf/digdag/server.properties:/etc/digdag/server.properties
+  #   depends_on:
+  #     # postgresのhealthcheckが成功したら起動
+  #     postgres:
+  #       condition: service_healthy
+
+  # pyspark
+  pyspark:
+    container_name: pyspark
     build:
       context: .
-      dockerfile: ./conf/digdag/Dockerfile
-    # platform: linux/x86_64
+      dockerfile: ./conf/pyspark/Dockerfile
+    command: >
+      start-notebook.sh --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.open_browser=False --NotebookApp.ip='0.0.0.0' --NotebookApp.port=8888
     ports:
-      - 65432:65432
+      - 8888:8888
+      - 4040:4040
     volumes:
-      # tmpとworkspaceのマウント
-      - ./data/digdag/tmp:/tmp
-      - ./data/digdag/workspace:/workspace
-      # 設定ファイルのマウント
-      - ./conf/digdag/server.properties:/etc/digdag/server.properties
-    depends_on:
-      # postgresのhealthcheckが成功したら起動
-      postgres:
-        condition: service_healthy
+      - ./data/pyspark/notebook:/home/jovyan/work
 
-  # metabase
-  metabase:
-    container_name: metabase
-    image: metabase/metabase:v0.42.3
-    # platform: linux/x86_64
-    environment:
-      MB_DB_TYPE: postgres
-      MB_DB_HOST: postgres
-      MB_DB_PORT: 5432
-      MB_DB_DBNAME: metabase
-      MB_DB_USER: metabase
-      MB_DB_PASS: password
-      # JAVA_TIMEZONE=Asia/Tokyo
-    ports:
-      - 3000:3000
-    volumes:
-      # データの永続化
-      - ./data/metabase:/metabase-data
-    depends_on:
-      # postgresのhealthcheckが成功したら起動
-      postgres:
-        condition: service_healthy
+  # # metabase
+  # metabase:
+  #   container_name: metabase
+  #   image: metabase/metabase:v0.42.3
+  #   # platform: linux/x86_64
+  #   environment:
+  #     MB_DB_TYPE: postgres
+  #     MB_DB_HOST: postgres
+  #     MB_DB_PORT: 5432
+  #     MB_DB_DBNAME: metabase
+  #     MB_DB_USER: metabase
+  #     MB_DB_PASS: password
+  #     # JAVA_TIMEZONE=Asia/Tokyo
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     # データの永続化
+  #     - ./data/metabase:/metabase-data
+  #   depends_on:
+  #     # postgresのhealthcheckが成功したら起動
+  #     postgres:
+  #       condition: service_healthy
