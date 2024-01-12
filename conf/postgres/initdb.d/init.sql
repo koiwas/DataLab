@@ -9,9 +9,9 @@ CREATE USER metabase WITH PASSWORD 'password' SUPERUSER;
 GRANT ALL PRIVILEGES ON DATABASE metabase TO metabase;
 
 -- for detasource
-CREATE DATABASE detasource;
-CREATE USER detasource WITH PASSWORD 'password' SUPERUSER;
-GRANT ALL PRIVILEGES ON DATABASE detasource TO detasource;
+CREATE DATABASE datasource;
+CREATE USER datasource WITH PASSWORD 'password' SUPERUSER;
+GRANT ALL PRIVILEGES ON DATABASE datasource TO datasource;
 
 \c detasource
 
