@@ -8,12 +8,12 @@ CREATE DATABASE metabase;
 CREATE USER metabase WITH PASSWORD 'password' SUPERUSER;
 GRANT ALL PRIVILEGES ON DATABASE metabase TO metabase;
 
--- for detasource
+-- for datasource
 CREATE DATABASE datasource;
 CREATE USER datasource WITH PASSWORD 'password' SUPERUSER;
 GRANT ALL PRIVILEGES ON DATABASE datasource TO datasource;
 
-\c detasource
+\c datasource
 
 CREATE TABLE IF NOT EXISTS EMPLOYEE (
   EMPLOYEE_ID VARCHAR(10) NOT NULL PRIMARY KEY,
