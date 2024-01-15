@@ -11,10 +11,10 @@ RUN curl -o /usr/local/bin/digdag --create-dirs -L "https://dl.digdag.io/digdag-
 RUN curl -o /usr/local/bin/embulk --create-dirs -L "https://dl.embulk.org/embulk-${EMBULK_VERSION}.jar" && \
     chmod +x /usr/local/bin/embulk
 
-# RUN embulk gem install jruby-openssl -v 0.10.4 && \
-#     embulk gem install embulk-input-postgresql && \
-#     embulk gem install embulk-output-postgresql && \
-#     embulk gem install embulk-output-parquet
+RUN embulk gem install jruby-openssl -v 0.10.4 && \
+    embulk gem install embulk-input-postgresql && \
+    embulk gem install embulk-output-postgresql && \
+    embulk gem install embulk-output-parquet
 
 WORKDIR /workspace
 
