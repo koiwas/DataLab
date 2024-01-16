@@ -15,19 +15,21 @@ def generate_sample_data(num):
     # 性別に応じた名前の生成
     data = []
     for i in range(1, num+1):
-        employee_id = f'E{str(i).zfill(4)}'
+        # employee_id = f'E{str(i).zfill(4)}'
         gender = random.choice(genders)
         if gender == 'MALE':
             name = f'{random.choice(last_names)}{random.choice(first_names_male)}'
         else:
             name = f'{random.choice(last_names)}{random.choice(first_names_female)}'
-        data.append([employee_id, name, gender])
+        # data.append([employee_id, name, gender])
+        data.append([name, gender])
 
     return data
 
 def generate_csv(num=100):
     # カラム名
-    columns = ['EMPLOYEE_ID', 'EMPLOYEE_NAME', 'GENDER']
+    # columns = ['EMPLOYEE_ID', 'EMPLOYEE_NAME', 'GENDER']
+    columns = ['EMPLOYEE_NAME', 'GENDER']
 
     # サンプルデータの生成
     data = generate_sample_data(num)
