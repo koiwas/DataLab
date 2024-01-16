@@ -1,0 +1,22 @@
+timezone: Asia/Tokyo
+
+# schedule:
+#  cron>: 30 10 * * *
+
+_export:
+  wf_name: "import_data_to_pg"
+  start_msg: "${wf_name} start"
+  end_msg: "${wf_name} finish"
+  error_msg: "${wf_name} error"
+
++start:
+  echo>: ${start_msg}
+
++import:
+  embulk>: /workspace/employee.yml
+
++end:
+  echo>: ${end_msg}
+
+_error:
+  echo>: ${error_msg}
