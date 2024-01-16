@@ -88,7 +88,7 @@ services:
   metabase:
     container_name: metabase
     image: metabase/metabase:v0.42.3
-    # platform: linux/x86_64
+    platform: linux/x86_64
     environment:
       MB_DB_TYPE: postgres
       MB_DB_HOST: postgres
