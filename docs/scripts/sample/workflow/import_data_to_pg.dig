@@ -5,6 +5,11 @@ timezone: Asia/Tokyo
 
 _export:
   wf_name: "import_data_to_pg"
+  pg:
+    host: postgres
+    port: 5432
+    database: datasource
+    user: datasource
   start_msg: "${wf_name} start"
   end_msg: "${wf_name} finish"
   error_msg: "${wf_name} error"
@@ -12,8 +17,14 @@ _export:
 +start:
   echo>: ${start_msg}
 
-+import:
-  embulk>: /workspace/employee.yml
++import_department:
+  embulk>: department.yml
+
++import_employee:
+  embulk>: employee.yml
+
++create_talent_master:
+  pg>: create_talent_master.sql
 
 +end:
   echo>: ${end_msg}
