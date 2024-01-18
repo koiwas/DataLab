@@ -1,0 +1,21 @@
+in:
+  type: file
+  path_prefix: /workspace/sample/datasource/department.csv
+  parser:
+    type: csv
+    charset: UTF-8
+    skip_header_lines: 1
+    columns:
+      - {name: department_id, type: long}
+      - {name: department_name, type: string}
+
+out:
+  type: postgresql
+  host: postgres
+  user: datasource
+  password: password
+  database: datasource
+  schema: sandbox
+  table: department
+  mode: merge
+  merge_key: department_id
