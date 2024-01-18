@@ -13,7 +13,7 @@ digdag init {project-name}
 cd {project-name}
 ```
 ```
-digdag run {wfname}
+digdag run {wfname} --session "yyyy-MM-dd HH:mm:SS"
 ```
 
 ### プロジェクトを登録
@@ -28,7 +28,7 @@ digdag secrets --project {project-name} --set pg.password={password} -e localhos
 
 ### ワークフローの実行（サーバー）
 ```
-digdag start {project-name} {wfname} --session now -e localhost:65432
+digdag start {project-name} {wfname} --session "yyyy-MM-dd HH:mm:SS" -e localhost:65432
 ```
 
 ### ワークフローの確認

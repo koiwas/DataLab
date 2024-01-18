@@ -1,0 +1,22 @@
+in:
+  type: file
+  path_prefix: /workspace/sample/datasource/employee.csv
+  parser:
+    type: csv
+    charset: UTF-8
+    skip_header_lines: 1
+    columns:
+      - {name: employee_id, type: string}
+      - {name: employee_name, type: string}
+      - {name: gender, type: string}
+      - {name: department_id, type: long}
+
+out:
+  type: postgresql
+  host: postgres
+  user: datasource
+  password: password
+  database: datasource
+  schema: sandbox
+  table: employee
+  mode: truncate_insert
